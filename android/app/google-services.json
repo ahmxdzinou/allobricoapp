@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "546878591858",
+    "project_id": "allobricoapp",
+    "storage_bucket": "allobricoapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546878591858:android:3005efb397ccd45567c3eb",
+        "android_client_info": {
+          "package_name": "com.example.allobricoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLwZn2CRLD1fZbTJKDjX0i4tIXcFlR6l8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
