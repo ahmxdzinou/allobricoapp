@@ -1,13 +1,15 @@
-import 'dart:io';
+// Importation des différentes dépendances nécessaires au fonctionnement de cet écran
+import 'dart:io';  // Pour la gestion des fichiers
 
-import 'package:allobricoapp/model/user_model.dart';
-import 'package:allobricoapp/provider/auth_provider.dart';
-import 'package:allobricoapp/screens/home_screen.dart';
-import 'package:allobricoapp/utils/utils.dart';
-import 'package:allobricoapp/widgets/custom_button.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:allobricoapp/model/user_model.dart';  // Modèle de données pour l'utilisateur
+import 'package:allobricoapp/provider/auth_provider.dart';  // Fournisseur d'authentification personnalisé
+import 'package:allobricoapp/screens/home_screen.dart';  // Écran d'accueil principal
+import 'package:allobricoapp/utils/utils.dart';  // Utilitaires divers
+import 'package:allobricoapp/widgets/custom_button.dart';  // Bouton personnalisé
+import 'package:flutter/material.dart';  // Package principal de Flutter pour la création de l'interface utilisateur
+import 'package:provider/provider.dart';  // Package pour la gestion des états via le pattern Provider
 
+// Déclaration du widget UserInformationScreen en tant que StatefulWidget
 class UserInfromationScreen extends StatefulWidget {
   const UserInfromationScreen({super.key});
 
@@ -15,11 +17,12 @@ class UserInfromationScreen extends StatefulWidget {
   State<UserInfromationScreen> createState() => _UserInfromationScreenState();
 }
 
+// État associé à UserInformationScreen
 class _UserInfromationScreenState extends State<UserInfromationScreen> {
-  File? image;
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final bioController = TextEditingController();
+  File? image;  // Variable pour stocker l'image de profil sélectionnée
+  final nameController = TextEditingController();  // Contrôleur pour le champ de texte du nom
+  final emailController = TextEditingController();  // Contrôleur pour le champ de texte de l'email
+  final bioController = TextEditingController();  // Contrôleur pour le champ de texte de la bio
 
   @override
   void dispose() {
@@ -29,15 +32,15 @@ class _UserInfromationScreenState extends State<UserInfromationScreen> {
     bioController.dispose();
   }
 
-  // for selecting image
+  // Fonction pour sélectionner une image
   void selectImage() async {
-    image = await pickImage(context);
-    setState(() {});
+    image = await pickImage(context);  // Utilise une fonction utilitaire pour sélectionner une image
+    setState(() {});  // Met à jour l'état de l'application
   }
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = Provider.of<AuthProvider>(context, listen: true).isLoading;
+    final isLoading = Provider.of<AuthProvider>(context, listen: true).isLoading;  // Indicateur de chargement
     return Scaffold(
       body: SafeArea(
         child: isLoading == true
@@ -47,8 +50,7 @@ class _UserInfromationScreenState extends State<UserInfromationScreen> {
                 ),
               )
             : SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 25.0, horizontal: 5.0),
+                padding: const EdgeInsets.symmetric(vertical: 25.0, horizontal: 5.0),
                 child: Center(
                   child: Column(
                     children: [
@@ -71,12 +73,11 @@ class _UserInfromationScreenState extends State<UserInfromationScreen> {
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 15),
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                         margin: const EdgeInsets.only(top: 20),
                         child: Column(
                           children: [
-                            // name field
+                            // Champ de texte pour le nom
                             textFeld(
                               hintText: "Nom & Prénom",
                               icon: Icons.account_circle,
@@ -84,8 +85,7 @@ class _UserInfromationScreenState extends State<UserInfromationScreen> {
                               maxLines: 1,
                               controller: nameController,
                             ),
-
-                            // email
+                            // Champ de texte pour l'email
                             textFeld(
                               hintText: "abc@example.com",
                               icon: Icons.email,
@@ -93,8 +93,7 @@ class _UserInfromationScreenState extends State<UserInfromationScreen> {
                               maxLines: 1,
                               controller: emailController,
                             ),
-
-                            // bio
+                            // Champ de texte pour la bio
                             textFeld(
                               hintText: "Entrer votre bio ici...",
                               icon: Icons.edit,
@@ -122,6 +121,7 @@ class _UserInfromationScreenState extends State<UserInfromationScreen> {
     );
   }
 
+  // Widget personnalisé pour les champs de texte
   Widget textFeld({
     required String hintText,
     required IconData icon,
@@ -171,7 +171,7 @@ class _UserInfromationScreenState extends State<UserInfromationScreen> {
     );
   }
 
-  // store user data to database
+  // Fonction pour stocker les données utilisateur dans la base de données
   void storeData() async {
     final ap = Provider.of<AuthProvider>(context, listen: false);
     UserModel userModel = UserModel(
@@ -202,7 +202,7 @@ class _UserInfromationScreenState extends State<UserInfromationScreen> {
         },
       );
     } else {
-      showSnackBar(context, "Please upload your profile photo");
+      showSnackBar(context, "Please upload your profile photo");  // Affiche un message d'erreur si aucune photo n'est sélectionnée
     }
   }
 }

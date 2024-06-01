@@ -1,9 +1,11 @@
-import 'package:allobricoapp/screens/booking_form.dart';
-import 'package:allobricoapp/widgets/drawer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+// Importation des différentes dépendances nécessaires au fonctionnement de cet écran
+import 'package:allobricoapp/screens/booking_form.dart';  // Écran du formulaire de réservation
+import 'package:allobricoapp/widgets/drawer.dart';  // Menu latéral personnalisé
+import 'package:cloud_firestore/cloud_firestore.dart';  // Firestore pour la base de données cloud
+import 'package:firebase_auth/firebase_auth.dart';  // Authentification Firebase
+import 'package:flutter/material.dart';  // Package principal de Flutter pour la création de l'interface utilisateur
 
+// Déclaration du widget HomeScreen en tant que StatefulWidget
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -11,13 +13,14 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+// État associé à HomeScreen
 class _HomeScreenState extends State<HomeScreen> {
-  late List<DocumentSnapshot> workers = [];
+  late List<DocumentSnapshot> workers = [];  // Liste des travailleurs
 
   @override
   void initState() {
     super.initState();
-    fetchWorkersByCategory("plombier");
+    fetchWorkersByCategory("plombier");  // Chargement initial des plombiers
   }
 
   @override
@@ -28,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: Builder(
           builder: (context) => IconButton(
             icon: Image.asset(
-              'assets/menu.png',
+              'assets/menu.png',  // Icône du menu
               width: 25,
             ),
             onPressed: () => Scaffold.of(context).openDrawer(),
@@ -36,10 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         backgroundColor: Colors.transparent,
       ),
-      drawer: const MyDrawer(),
+      drawer: const MyDrawer(),  // Menu latéral personnalisé
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            // Section supérieure avec dégradé et texte
             Container(
               height: 330,
               width: double.infinity,
@@ -70,13 +74,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Color.fromRGBO(72, 72, 72, 1)))),
                       Expanded(
                         flex: 3,
-                        child: Image.asset('assets/image4.png'),
+                        child: Image.asset('assets/image4.png'),  // Image illustrative
                       ),
                     ],
                   )
                 ],
               ),
             ),
+            // Champ de recherche
             Transform.translate(
               offset: const Offset(0, -35),
               child: Container(
@@ -100,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 10),
+            // Boutons de catégorie
             Column(
               children: [
                 Row(
@@ -122,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
               ],
             ),
+            // Liste horizontale des travailleurs
             SizedBox(
               height: 320,
               child: ListView.builder(
@@ -140,6 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Fonction pour récupérer les travailleurs par catégorie depuis Firestore
   void fetchWorkersByCategory(String category) {
     FirebaseFirestore.instance
       .collection('workers')
@@ -147,12 +155,13 @@ class _HomeScreenState extends State<HomeScreen> {
       .get()
       .then((QuerySnapshot querySnapshot) {
       setState(() {
-        workers = querySnapshot.docs;
+        workers = querySnapshot.docs;  // Mise à jour de la liste des travailleurs
       });
     });
   }
 }
 
+// Widget pour les boutons de catégorie
 class CategoryButton extends StatelessWidget {
   final String category;
   final Function(String) onPressed;
@@ -180,6 +189,7 @@ class CategoryButton extends StatelessWidget {
   }
 }
 
+// Widget pour les cartes des travailleurs
 class WorkerCard extends StatefulWidget {
   final QueryDocumentSnapshot workerData;
 
@@ -190,7 +200,7 @@ class WorkerCard extends StatefulWidget {
 }
 
 class _WorkerCardState extends State<WorkerCard> {
-  bool isFavorite = false;
+  bool isFavorite = false;  // État du favori
   final user = FirebaseAuth.instance.currentUser;
 
   @override
@@ -213,7 +223,7 @@ class _WorkerCardState extends State<WorkerCard> {
                 color: Colors.grey.withOpacity(0.5),
                 spreadRadius: 2,
                 blurRadius: 5,
-                offset: Offset(0, 3), // changes position of shadow
+                offset: Offset(0, 3), // Position de l'ombre
               ),
             ],
           ),
@@ -226,7 +236,7 @@ class _WorkerCardState extends State<WorkerCard> {
                   children: [
                     CircleAvatar(
                       radius: 30,
-                      backgroundImage: NetworkImage(widget.workerData['profilePic']),
+                      backgroundImage: NetworkImage(widget.workerData['profilePic']),  // Image de profil
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -249,8 +259,7 @@ class _WorkerCardState extends State<WorkerCard> {
                                 height: 38,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  
-                                  color: Colors.white, // Background color of the circle
+                                  color: Colors.white, // Couleur de fond du cercle
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.grey.withOpacity(0.5),
@@ -323,15 +332,15 @@ class _WorkerCardState extends State<WorkerCard> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BookingForm(workerUid: widget.workerData.id),
+                          builder: (context) => BookingForm(workerUid: widget.workerData.id),  // Navigue vers le formulaire de réservation
                         ),
                       );
                     },
                     child: const Text(
                       'Contacter',
                       style: TextStyle(
-                        fontSize: 16, // Font size
-                        fontWeight: FontWeight.bold, // Font weight
+                        fontSize: 16, // Taille de la police
+                        fontWeight: FontWeight.bold, // Poids de la police
                       ),
                     ),
                     style: ButtonStyle(

@@ -1,4 +1,5 @@
 class UserModel {
+  // Champs de la classe UserModel
   String name;
   String email;
   String bio;
@@ -7,6 +8,7 @@ class UserModel {
   String phoneNumber;
   String uid;
 
+  // Constructeur de la classe UserModel
   UserModel({
     required this.name,
     required this.email,
@@ -17,10 +19,10 @@ class UserModel {
     required this.uid,
   });
 
-  // from map
+  // Factory constructor pour créer une instance de UserModel à partir d'une carte (map)
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      name: map['name'] ?? '',
+      name: map['name'] ?? '',  // Utilise une chaîne vide si le champ est nul
       email: map['email'] ?? '',
       bio: map['bio'] ?? '',
       uid: map['uid'] ?? '',
@@ -30,7 +32,7 @@ class UserModel {
     );
   }
 
-  // to map
+  // Méthode pour convertir une instance de UserModel en une carte (map)
   Map<String, dynamic> toMap() {
     return {
       "name": name,

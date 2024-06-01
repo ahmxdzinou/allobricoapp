@@ -19,6 +19,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     _getCurrentUser();
   }
 
+  // Get the current user and set their UID
   Future<void> _getCurrentUser() async {
     User? user = _auth.currentUser;
     setState(() {
@@ -40,18 +41,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   .where('requesterId', isEqualTo: _currentUserId)
                   .snapshots(),
               builder: (context, snapshot) {
+                // Display a loading indicator while fetching data
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
+
+                // Display a message if no data is available
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return const Center(child: Text('No booking requests found'));
                 }
+
+                // Display the list of booking requests
                 return ListView(
                   children: snapshot.data!.docs.map((doc) {
                     var data = doc.data() as Map<String, dynamic>;
                     String status = data['status'] ?? '';
                     Color cardColor;
 
+                    // Set the card color based on the booking status
                     switch (status) {
                       case 'Annuler':
                       case 'Refuse':

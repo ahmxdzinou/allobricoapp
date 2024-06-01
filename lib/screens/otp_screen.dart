@@ -1,27 +1,29 @@
-import 'package:allobricoapp/provider/auth_provider.dart';
-import 'package:allobricoapp/screens/home_screen.dart';
-import 'package:allobricoapp/screens/user_information_screen.dart';
-import 'package:allobricoapp/utils/utils.dart';
-import 'package:allobricoapp/widgets/custom_button.dart';
-import 'package:flutter/material.dart';
-import 'package:pinput/pinput.dart';
-import 'package:provider/provider.dart';
+// Importation des différentes dépendances nécessaires au fonctionnement de cet écran
+import 'package:allobricoapp/provider/auth_provider.dart';  // Fournisseur d'authentification personnalisé
+import 'package:allobricoapp/screens/home_screen.dart';  // Écran d'accueil
+import 'package:allobricoapp/screens/user_information_screen.dart';  // Écran d'informations utilisateur
+import 'package:allobricoapp/utils/utils.dart';  // Utilitaires
+import 'package:allobricoapp/widgets/custom_button.dart';  // Bouton personnalisé
+import 'package:flutter/material.dart';  // Package principal de Flutter pour la création de l'interface utilisateur
+import 'package:pinput/pinput.dart';  // Package pour l'entrée de code PIN
+import 'package:provider/provider.dart';  // Package pour la gestion des états via le pattern Provider
 
+// Déclaration du widget OtpScreen en tant que StatefulWidget
 class OtpScreen extends StatefulWidget {
-  final String verificationId;
+  final String verificationId;  // Identifiant de vérification OTP
   const OtpScreen({super.key, required this.verificationId});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
 }
 
+// État associé à OtpScreen
 class _OtpScreenState extends State<OtpScreen> {
-  String? otpCode;
+  String? otpCode;  // Variable pour stocker le code OTP saisi
 
   @override
   Widget build(BuildContext context) {
-    final isLoading =
-        Provider.of<AuthProvider>(context, listen: true).isLoading;
+    final isLoading = Provider.of<AuthProvider>(context, listen: true).isLoading;  // État de chargement
     return Scaffold(
       body: SafeArea(
         child: isLoading == true
@@ -32,15 +34,14 @@ class _OtpScreenState extends State<OtpScreen> {
               )
             : Center(
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 25, horizontal: 30),
+                  padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 30),
                   child: Column(
                     children: [
                       Align(
                         alignment: Alignment.topLeft,
                         child: GestureDetector(
                           onTap: () => Navigator.of(context).pop(),
-                          child: const Icon(Icons.arrow_back),
+                          child: const Icon(Icons.arrow_back),  // Icône de retour en arrière
                         ),
                       ),
                       Container(
@@ -48,7 +49,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         height: 200,
                         padding: const EdgeInsets.all(20.0),
                         child: Image.asset(
-                          "assets/image3.png",
+                          "assets/image3.png",  // Image de vérification
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -70,6 +71,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 20),
+                      // Widget pour l'entrée du code PIN
                       Pinput(
                         length: 6,
                         showCursor: true,
@@ -79,7 +81,7 @@ class _OtpScreenState extends State<OtpScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color:const Color.fromRGBO(251, 53, 105, 1),
+                              color: const Color.fromRGBO(251, 53, 105, 1),
                             ),
                           ),
                           textStyle: const TextStyle(
@@ -89,7 +91,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         ),
                         onCompleted: (value) {
                           setState(() {
-                            otpCode = value;
+                            otpCode = value;  // Met à jour le code OTP saisi
                           });
                         },
                       ),
@@ -101,7 +103,7 @@ class _OtpScreenState extends State<OtpScreen> {
                           text: "Vérifier",
                           onPressed: () {
                             if (otpCode != null) {
-                              verifyOtp(context, otpCode!);
+                              verifyOtp(context, otpCode!);  // Vérifie le code OTP saisi
                             } else {
                               showSnackBar(context, "Entrez le code à 6 chiffres");
                             }
@@ -134,7 +136,7 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 
-  // verify otp
+  // Fonction pour vérifier le code OTP
   void verifyOtp(BuildContext context, String userOtp) {
     final ap = Provider.of<AuthProvider>(context, listen: false);
     ap.verifyOtp(
@@ -142,29 +144,29 @@ class _OtpScreenState extends State<OtpScreen> {
       verificationId: widget.verificationId,
       userOtp: userOtp,
       onSuccess: () {
-        // checking whether user exists in the db
+        // Vérifie si l'utilisateur existe dans la base de données
         ap.checkExistingUser().then(
           (value) async {
             if (value == true) {
-              // user exists in our app
+              // L'utilisateur existe dans notre application
               ap.getDataFromFirestore().then(
                     (value) => ap.saveUserDataToSP().then(
                           (value) => ap.setSignIn().then(
                                 (value) => Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const HomeScreen(),
+                                      builder: (context) => const HomeScreen(),  // Navigue vers l'écran d'accueil
                                     ),
                                     (route) => false),
                               ),
                         ),
                   );
             } else {
-              // new user
+              // Nouvel utilisateur
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const UserInfromationScreen()),
+                      builder: (context) => const UserInfromationScreen()),  // Navigue vers l'écran d'informations utilisateur
                   (route) => false);
             }
           },

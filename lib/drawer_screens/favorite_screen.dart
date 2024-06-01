@@ -25,14 +25,17 @@ class _FavoritesState extends State<Favorites> {
             .where('userId', isEqualTo: user!.uid)
             .get(),
         builder: (context, snapshot) {
+          // Afficher un indicateur de chargement si les données ne sont pas encore prêtes
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
+          // Afficher un message si aucun favori n'est trouvé
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(child: Text('No favorites found.'));
           }
 
+          // Récupérer les IDs des travailleurs favoris
           final favoriteWorkerIds = snapshot.data!.docs.map((doc) => doc['workerId']).toList();
 
           return FutureBuilder<QuerySnapshot>(
@@ -41,14 +44,17 @@ class _FavoritesState extends State<Favorites> {
                 .where(FieldPath.documentId, whereIn: favoriteWorkerIds)
                 .get(),
             builder: (context, snapshot) {
+              // Afficher un indicateur de chargement si les données ne sont pas encore prêtes
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
 
+              // Afficher un message si aucun travailleur n'est trouvé
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return const Center(child: Text('No workers found.'));
               }
 
+              // Construire la liste des cartes des travailleurs
               return ListView.builder(
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
@@ -57,6 +63,7 @@ class _FavoritesState extends State<Favorites> {
                   return WorkerCard(
                     workerData: workerData,
                     onRemove: () {
+                      // Supprimer un travailleur des favoris
                       FirebaseFirestore.instance
                           .collection('favorites')
                           .where('userId', isEqualTo: user!.uid)
@@ -80,6 +87,7 @@ class _FavoritesState extends State<Favorites> {
   }
 }
 
+// Widget pour afficher les informations d'un travailleur
 class WorkerCard extends StatelessWidget {
   final QueryDocumentSnapshot workerData;
   final VoidCallback onRemove;
@@ -98,6 +106,7 @@ class WorkerCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
+            // Affichage de la photo de profil du travailleur
             CircleAvatar(
               radius: 30,
               backgroundImage: NetworkImage(workerData['profilePic']),
@@ -107,6 +116,7 @@ class WorkerCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Affichage du nom du travailleur
                   Text(
                     workerData['name'],
                     style: const TextStyle(
@@ -116,6 +126,7 @@ class WorkerCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 5),
+                  // Affichage du type de travailleur
                   Text(
                     workerData['workerType'],
                     style: const TextStyle(
@@ -127,12 +138,13 @@ class WorkerCard extends StatelessWidget {
                 ],
               ),
             ),
+            // Bouton pour envoyer un message au travailleur
             IconButton(
               icon: const Icon(
-                Icons.message, 
-                color: Color.fromRGBO(0, 0, 0, 1),
+                Icons.message,
+                color: Colors.black,
                 size: 26,
-                ),
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -142,9 +154,10 @@ class WorkerCard extends StatelessWidget {
                 );
               },
             ),
-            SizedBox(width: 20,),
+            const SizedBox(width: 20),
+            // Bouton pour supprimer le travailleur des favoris
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red, size: 29,),
+              icon: const Icon(Icons.delete, color: Colors.red, size: 29),
               onPressed: onRemove,
             ),
           ],

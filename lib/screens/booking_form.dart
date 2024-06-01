@@ -1,23 +1,25 @@
-import 'package:allobricoapp/model/request_model.dart';
-import 'package:allobricoapp/provider/auth_provider.dart';
-import 'package:allobricoapp/screens/home_screen.dart';
-import 'package:allobricoapp/utils/utils.dart';
-import 'package:allobricoapp/widgets/custom_button.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+// Importation des différentes dépendances nécessaires au fonctionnement de cet écran
+import 'package:allobricoapp/model/request_model.dart';  // Modèle de requête
+import 'package:allobricoapp/provider/auth_provider.dart';  // Fournisseur d'authentification
+import 'package:allobricoapp/screens/home_screen.dart';  // Écran d'accueil
+import 'package:allobricoapp/utils/utils.dart';  // Utilitaires
+import 'package:allobricoapp/widgets/custom_button.dart';  // Bouton personnalisé
+import 'package:flutter/material.dart';  // Package principal de Flutter pour la création de l'interface utilisateur
+import 'package:provider/provider.dart';  // Gestion de l'état
 
+// Déclaration du widget BookingForm en tant que StatefulWidget
 class BookingForm extends StatefulWidget {
-  final String workerUid;
-  const BookingForm({super.key, required this.workerUid,});
+  final String workerUid;  // UID du travailleur
+  const BookingForm({super.key, required this.workerUid});
 
   @override
   State<BookingForm> createState() => _BookingFormState();
 }
 
+// État associé à BookingForm
 class _BookingFormState extends State<BookingForm> {
-  
-  final TitleController = TextEditingController();
-  final DescriptionController = TextEditingController();
+  final TitleController = TextEditingController();  // Contrôleur pour le titre
+  final DescriptionController = TextEditingController();  // Contrôleur pour la description
 
   @override
   void dispose() {
@@ -28,52 +30,53 @@ class _BookingFormState extends State<BookingForm> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = Provider.of<AuthProvider>(context, listen: true).isLoading;
-    return  Scaffold(
+    final isLoading = Provider.of<AuthProvider>(context, listen: true).isLoading;  // Vérifie si une opération de chargement est en cours
+    return Scaffold(
       appBar: AppBar(
         title: const Text('Booking Form'),
       ),
       body: isLoading == true
-          ?const Center(
+          ? const Center(
               child: CircularProgressIndicator(
                 color: Color.fromARGB(255, 255, 179, 0),
               ),
             )
-          :Padding(
+          : Padding(
               padding: EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   textFeld(
-                    hintText: "Titre de probleme",
+                    hintText: "Titre de problème",
                     icon: Icons.title,
                     inputType: TextInputType.text,
                     controller: TitleController,
                   ),
                   SizedBox(height: 20.0),
                   textFeld(
-                    hintText: "Description de probleme ",
+                    hintText: "Description de problème ",
                     icon: Icons.description,
                     inputType: TextInputType.text,
                     controller: DescriptionController,
                   ),
                   SizedBox(height: 20.0),
                   SizedBox(
-                        height: 50,
-                        width: MediaQuery.of(context).size.width * 0.90,
-                        child: CustomButton(
-                          text: "Valider",
-                          onPressed:() {
-                            saveRequestDataToFirestore(context);
-                          },
-                        ),
+                    height: 50,
+                    width: MediaQuery.of(context).size.width * 0.90,
+                    child: CustomButton(
+                      text: "Valider",
+                      onPressed: () {
+                        saveRequestDataToFirestore(context);  // Sauvegarde des données de la requête dans Firestore
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
-        );
+    );
   }
 
+  // Widget pour les champs de texte
   Widget textFeld({
     required String hintText,
     required IconData icon,
@@ -116,51 +119,46 @@ class _BookingFormState extends State<BookingForm> {
     );
   }
 
+  // Fonction pour sauvegarder les données de la requête dans Firestore
   void saveRequestDataToFirestore(BuildContext context) async {
-  try {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    
-    BookingModel bookingModel = BookingModel(
-      title: TitleController.text.trim(),
-      description: DescriptionController.text.trim(),
-      requesterName: ap.userModel.name, 
-      requesterId: ap.uid,
-      workerId: widget.workerUid,
-      createdAt: DateTime.now(),
-      status: 'En cours', 
-    );
-    
-    await ap.saveRequestDataToFirestore(
-      bookingModel: bookingModel,
-      onSuccess: () {
-        ap.saveUserDataToSP().then(
-          (value) => ap.setSignIn().then(
-            (value) => Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const HomeScreen(),
+    try {
+      final ap = Provider.of<AuthProvider>(context, listen: false);  // Fournisseur d'authentification
+      
+      BookingModel bookingModel = BookingModel(
+        title: TitleController.text.trim(),
+        description: DescriptionController.text.trim(),
+        requesterName: ap.userModel.name,  // Nom du demandeur
+        requesterId: ap.uid,  // UID du demandeur
+        workerId: widget.workerUid,  // UID du travailleur
+        createdAt: DateTime.now(),
+        status: 'En cours',  // Statut initial
+      );
+      
+      await ap.saveRequestDataToFirestore(
+        bookingModel: bookingModel,
+        onSuccess: () {
+          ap.saveUserDataToSP().then(
+            (value) => ap.setSignIn().then(
+              (value) => Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HomeScreen(),  // Navigation vers l'écran d'accueil
+                ),
+                (route) => false,
               ),
-              (route) => false,
             ),
-          ),
-        );
-      },
-      onError: () {
-        // Handle error if request data couldn't be saved
-        showSnackBar(context, "Failed to save request data");
-      },
-    );
-  } catch (error) {
-    // Handle any errors
-    print('Error storing request data: $error');
-    // Show an error message
-    showSnackBar(context, "Failed to store request data");
+          );
+        },
+        onError: () {
+          // Gérer l'erreur si les données de la requête ne peuvent pas être sauvegardées
+          showSnackBar(context, "Failed to save request data");
+        },
+      );
+    } catch (error) {
+      // Gérer les erreurs éventuelles
+      print('Error storing request data: $error');
+      // Afficher un message d'erreur
+      showSnackBar(context, "Failed to store request data");
+    }
   }
-}
-
-
-
-  
-
-
 }
